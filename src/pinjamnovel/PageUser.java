@@ -1,0 +1,1650 @@
+package pinjamnovel;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Color;
+import java.awt.Frame;
+import javax.swing.*;
+import java.sql.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javax.swing.border.LineBorder;
+
+/**
+ *
+ * @author Robert
+ */
+public class PageUser extends javax.swing.JFrame {
+
+    private ScheduledExecutorService executor;
+    init init = new init();
+    Object[][] data1 = null;
+    Object[][] data2 = null;
+    String temp, user, sql, username, jurusan, nama, tglahir, alamat, notelp, nim, nama2, no_telp, judul_buku, id_buku, status, jumlah;
+    int xx, xy;
+
+    public PageUser(String temp) {
+        initComponents();
+        PageUser.this.getRootPane().setBorder(new LineBorder(Color.black));
+        active(pinjamBuku);
+        label_nim.setText(temp);
+        labUser.setText(temp);
+        labPinjamBuku.setForeground(Color.black);
+        this.user = temp;
+        sql = "SELECT * FROM datapinjaman_pending WHERE nim = '" + user + "' UNION SELECT * FROM datapinjaman WHERE nim = '" + user + "'";
+        tampilTabel(getData("SELECT * FROM buku"));
+        tampilTabelBuku(getData1(sql));
+        this.setLocationRelativeTo(null);
+        labUser.setText(temp);
+        try {
+            init.Connection();
+            PreparedStatement pSt = init.conn.prepareStatement("SELECT * FROM mahasiswa WHERE nim = ?");
+            PreparedStatement pSt2 = init.conn.prepareStatement("SELECT * FROM dblogin WHERE nim = ?");
+            pSt2.setString(1, user);
+            pSt.setString(1, user);
+            ResultSet rs = pSt.executeQuery();
+            ResultSet rs2 = pSt2.executeQuery();
+
+            if (rs2.next()) {
+                username = rs2.getString("username");
+                label_user.setText(username);
+                label_user1.setText(username);
+            }
+
+            if (rs.next()) {
+                nama = rs.getString("nama");
+                jurusan = rs.getString("jurusan");
+                tglahir = rs.getDate("tgl_lahir").toString();
+                alamat = rs.getString("alamat");
+                notelp = rs.getString("no_telp");
+
+                labNama.setText(nama);
+                labJurusan.setText(jurusan);
+                labTglahir.setText(tglahir);
+                labAlamat.setText(alamat);
+                labTelp.setText(notelp);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error " + e.toString());
+        }
+
+        executor = Executors.newScheduledThreadPool(1);
+        Runnable task = new Runnable() {
+            public void run() {
+                try {
+                    init.Connection();
+                    PreparedStatement pSt = init.conn.prepareStatement("SELECT * FROM notif WHERE nim = ?");
+                    pSt.setString(1, user);
+                    ResultSet rs = pSt.executeQuery();
+                    while (rs.next()) {
+                        String judul_buku = rs.getString("judul_buku");
+                        String id_buku = rs.getString("id_buku");
+                        String alasan = rs.getString("alasan");
+                        String notif = rs.getString("notifikasi");
+                        try {
+                            init.Connection();
+
+                            PreparedStatement pStatement = init.conn.prepareStatement("DELETE FROM notif WHERE id_buku = ? ");
+                            pStatement.setString(1, id_buku);
+
+                            if (pStatement.executeUpdate() > 0) {
+                                if (notif.equals("Disetujui")) {
+                                    JOptionPane.showMessageDialog(null, "Pengajuan buku " + judul_buku + " telah disetujui dan dapat di ambil di perpustakaan", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Pengajuan buku " + judul_buku + " Ditolak karena " + alasan, "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        } catch (SQLException e) {
+                            System.out.println("Error " + e.toString());
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Error " + e.toString());
+                }
+                tampilTabel(getData("SELECT * FROM buku"));
+                tampilTabelBuku(getData1(sql));
+            }
+        };
+        executor.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        pnlTitlebar = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        close = new javax.swing.JPanel();
+        jLabel32 = new javax.swing.JLabel();
+        maximize = new javax.swing.JPanel();
+        jLabel33 = new javax.swing.JLabel();
+        minimize = new javax.swing.JPanel();
+        jLabel35 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel30 = new javax.swing.JLabel();
+        pnlMain = new javax.swing.JPanel();
+        sideNav = new javax.swing.JPanel();
+        pinjamBuku = new javax.swing.JPanel();
+        jSeparator5 = new javax.swing.JSeparator();
+        labPinjamBuku = new javax.swing.JLabel();
+        dataPinjam = new javax.swing.JPanel();
+        labDataPinjam = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        pengaturan = new javax.swing.JPanel();
+        labPengaturan = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel5 = new javax.swing.JLabel();
+        pnlContent = new javax.swing.JPanel();
+        content_1 = new javax.swing.JPanel();
+        body1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jLabel1 = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel4 = new javax.swing.JLabel();
+        footer1 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        labJudul = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        cmbLamaPinjam = new javax.swing.JComboBox<>();
+        jLabel9 = new javax.swing.JLabel();
+        btnPinjamBuku = new javax.swing.JButton();
+        labStatus = new javax.swing.JLabel();
+        content_2 = new javax.swing.JPanel();
+        body2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        label_user = new javax.swing.JLabel();
+        label_nim = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jumlahbuku = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        footer2 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        btnKembalibuku = new javax.swing.JButton();
+        labTglPengembalian = new javax.swing.JLabel();
+        labTglPinjam = new javax.swing.JLabel();
+        labJudul1 = new javax.swing.JLabel();
+        labID1 = new javax.swing.JLabel();
+        content_3 = new javax.swing.JPanel();
+        body = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        label_user1 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        labUser = new javax.swing.JLabel();
+        labNama = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        labJurusan = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        labTglahir = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        labAlamat = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        labTelp = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
+        txtPassLama = new javax.swing.JPasswordField();
+        txtPassBaru = new javax.swing.JPasswordField();
+        txtPassKonfirmasi = new javax.swing.JPasswordField();
+        btnSimpanPassword = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        txtUsername = new javax.swing.JTextField();
+        txtPassUsername = new javax.swing.JPasswordField();
+        btnEdit = new javax.swing.JButton();
+        btnSimpanUsername = new javax.swing.JButton();
+        footer3 = new javax.swing.JPanel();
+        btnKeluar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1200, 600));
+        setUndecorated(true);
+
+        pnlTitlebar.setBackground(new java.awt.Color(0, 0, 0));
+        pnlTitlebar.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                pnlTitlebarMouseDragged(evt);
+            }
+        });
+        pnlTitlebar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pnlTitlebarMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                pnlTitlebarMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                pnlTitlebarMouseReleased(evt);
+            }
+        });
+
+        jPanel2.setBackground(new java.awt.Color(0, 0, 0));
+
+        close.setBackground(new java.awt.Color(0, 0, 0));
+        close.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        close.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                closeMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                closeMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                closeMouseReleased(evt);
+            }
+        });
+
+        jLabel32.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/close.png"))); // NOI18N
+        jLabel32.setText("jLabel30");
+        jLabel32.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        javax.swing.GroupLayout closeLayout = new javax.swing.GroupLayout(close);
+        close.setLayout(closeLayout);
+        closeLayout.setHorizontalGroup(
+            closeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, closeLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        closeLayout.setVerticalGroup(
+            closeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(closeLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
+        );
+
+        maximize.setBackground(new java.awt.Color(0, 0, 0));
+        maximize.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        maximize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                maximizeMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                maximizeMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                maximizeMouseReleased(evt);
+            }
+        });
+
+        jLabel33.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/maximize.png"))); // NOI18N
+        jLabel33.setText("jLabel30");
+        jLabel33.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        javax.swing.GroupLayout maximizeLayout = new javax.swing.GroupLayout(maximize);
+        maximize.setLayout(maximizeLayout);
+        maximizeLayout.setHorizontalGroup(
+            maximizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, maximizeLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        maximizeLayout.setVerticalGroup(
+            maximizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(maximizeLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jLabel33, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
+        );
+
+        minimize.setBackground(new java.awt.Color(0, 0, 0));
+        minimize.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        minimize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                minimizeMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                minimizeMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                minimizeMouseReleased(evt);
+            }
+        });
+
+        jLabel35.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/minimize.png"))); // NOI18N
+        jLabel35.setText("jLabel30");
+        jLabel35.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        javax.swing.GroupLayout minimizeLayout = new javax.swing.GroupLayout(minimize);
+        minimize.setLayout(minimizeLayout);
+        minimizeLayout.setHorizontalGroup(
+            minimizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, minimizeLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        minimizeLayout.setVerticalGroup(
+            minimizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(minimizeLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addComponent(minimize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(maximize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(close, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(close, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(maximize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(minimize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        jPanel3.setBackground(new java.awt.Color(0, 0, 0));
+
+        jLabel30.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel30.setText("Library Management");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout pnlTitlebarLayout = new javax.swing.GroupLayout(pnlTitlebar);
+        pnlTitlebar.setLayout(pnlTitlebarLayout);
+        pnlTitlebarLayout.setHorizontalGroup(
+            pnlTitlebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTitlebarLayout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 686, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        pnlTitlebarLayout.setVerticalGroup(
+            pnlTitlebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(pnlTitlebar, java.awt.BorderLayout.PAGE_START);
+
+        pnlMain.setLayout(new java.awt.BorderLayout());
+
+        sideNav.setBackground(new java.awt.Color(51, 51, 51));
+
+        pinjamBuku.setBackground(new java.awt.Color(51, 51, 51));
+        pinjamBuku.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pinjamBuku.setPreferredSize(new java.awt.Dimension(163, 60));
+        pinjamBuku.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pinjamBukuMouseClicked(evt);
+            }
+        });
+
+        labPinjamBuku.setText("Pinjam Buku");
+
+        javax.swing.GroupLayout pinjamBukuLayout = new javax.swing.GroupLayout(pinjamBuku);
+        pinjamBuku.setLayout(pinjamBukuLayout);
+        pinjamBukuLayout.setHorizontalGroup(
+            pinjamBukuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator5)
+            .addGroup(pinjamBukuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pinjamBukuLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labPinjamBuku, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        pinjamBukuLayout.setVerticalGroup(
+            pinjamBukuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pinjamBukuLayout.createSequentialGroup()
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(50, Short.MAX_VALUE))
+            .addGroup(pinjamBukuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pinjamBukuLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labPinjamBuku, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        dataPinjam.setBackground(new java.awt.Color(51, 51, 51));
+        dataPinjam.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        dataPinjam.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dataPinjamMouseClicked(evt);
+            }
+        });
+
+        labDataPinjam.setForeground(new java.awt.Color(255, 255, 255));
+        labDataPinjam.setText("Data Pinjaman");
+
+        javax.swing.GroupLayout dataPinjamLayout = new javax.swing.GroupLayout(dataPinjam);
+        dataPinjam.setLayout(dataPinjamLayout);
+        dataPinjamLayout.setHorizontalGroup(
+            dataPinjamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1)
+            .addGroup(dataPinjamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(dataPinjamLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labDataPinjam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        dataPinjamLayout.setVerticalGroup(
+            dataPinjamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dataPinjamLayout.createSequentialGroup()
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 54, Short.MAX_VALUE))
+            .addGroup(dataPinjamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(dataPinjamLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labDataPinjam, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        pengaturan.setBackground(new java.awt.Color(51, 51, 51));
+        pengaturan.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pengaturan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pengaturanMouseClicked(evt);
+            }
+        });
+
+        labPengaturan.setForeground(new java.awt.Color(255, 255, 255));
+        labPengaturan.setText("Pengaturan/Log Out");
+
+        javax.swing.GroupLayout pengaturanLayout = new javax.swing.GroupLayout(pengaturan);
+        pengaturan.setLayout(pengaturanLayout);
+        pengaturanLayout.setHorizontalGroup(
+            pengaturanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(pengaturanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pengaturanLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labPengaturan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        pengaturanLayout.setVerticalGroup(
+            pengaturanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pengaturanLayout.createSequentialGroup()
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 54, Short.MAX_VALUE))
+            .addGroup(pengaturanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pengaturanLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labPengaturan, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Icon-Library-small.png"))); // NOI18N
+        jLabel5.setText("jLabel5");
+
+        javax.swing.GroupLayout sideNavLayout = new javax.swing.GroupLayout(sideNav);
+        sideNav.setLayout(sideNavLayout);
+        sideNavLayout.setHorizontalGroup(
+            sideNavLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pinjamBuku, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+            .addComponent(dataPinjam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pengaturan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sideNavLayout.createSequentialGroup()
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        sideNavLayout.setVerticalGroup(
+            sideNavLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(sideNavLayout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42)
+                .addComponent(pinjamBuku, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(dataPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(pengaturan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(226, Short.MAX_VALUE))
+        );
+
+        pnlMain.add(sideNav, java.awt.BorderLayout.WEST);
+
+        pnlContent.setMinimumSize(new java.awt.Dimension(994, 393));
+        pnlContent.setPreferredSize(new java.awt.Dimension(994, 393));
+        pnlContent.setLayout(new java.awt.CardLayout());
+
+        content_1.setPreferredSize(new java.awt.Dimension(994, 393));
+        content_1.setLayout(new java.awt.BorderLayout());
+
+        body1.setPreferredSize(new java.awt.Dimension(539, 274));
+
+        jScrollPane1.setBackground(new java.awt.Color(204, 255, 255));
+        jScrollPane1.setBorder(null);
+
+        jLabel1.setText("Cari Buku");
+
+        txtSearch.setBackground(new java.awt.Color(240, 240, 240));
+        txtSearch.setBorder(null);
+        txtSearch.setHighlighter(null);
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchKeyReleased(evt);
+            }
+        });
+
+        jLabel4.setText("Ketik untuk mencari buku...");
+
+        javax.swing.GroupLayout body1Layout = new javax.swing.GroupLayout(body1);
+        body1.setLayout(body1Layout);
+        body1Layout.setHorizontalGroup(
+            body1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+            .addGroup(body1Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(body1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSeparator4)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addComponent(jLabel4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        body1Layout.setVerticalGroup(
+            body1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, body1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(body1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
+        );
+
+        content_1.add(body1, java.awt.BorderLayout.CENTER);
+
+        footer1.setBackground(new java.awt.Color(204, 204, 204));
+        footer1.setMaximumSize(new java.awt.Dimension(926, 129));
+
+        jLabel6.setText("Pinjam Buku");
+
+        labJudul.setText("...");
+
+        jLabel8.setText("Lama Pinjaman");
+
+        cmbLamaPinjam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30" }));
+
+        jLabel9.setText("HARI");
+
+        btnPinjamBuku.setText("Pinjam");
+        btnPinjamBuku.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPinjamBukuActionPerformed(evt);
+            }
+        });
+
+        labStatus.setText("Status...");
+
+        javax.swing.GroupLayout footer1Layout = new javax.swing.GroupLayout(footer1);
+        footer1.setLayout(footer1Layout);
+        footer1Layout.setHorizontalGroup(
+            footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer1Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(labStatus)
+                    .addComponent(jLabel8))
+                .addGap(68, 68, 68)
+                .addGroup(footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(footer1Layout.createSequentialGroup()
+                        .addComponent(cmbLamaPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel9))
+                    .addComponent(btnPinjamBuku, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(669, Short.MAX_VALUE))
+        );
+        footer1Layout.setVerticalGroup(
+            footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer1Layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addGroup(footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(labJudul))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(cmbLamaPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(footer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labStatus)
+                    .addComponent(btnPinjamBuku))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+
+        content_1.add(footer1, java.awt.BorderLayout.PAGE_END);
+
+        pnlContent.add(content_1, "card2");
+
+        content_2.setPreferredSize(new java.awt.Dimension(994, 393));
+        content_2.setLayout(new java.awt.BorderLayout());
+
+        body2.setPreferredSize(new java.awt.Dimension(926, 208));
+
+        jScrollPane2.setBorder(null);
+
+        jLabel2.setText("USER");
+
+        jLabel3.setText("NIM");
+
+        label_user.setText("user..");
+
+        label_nim.setText("nim..");
+
+        jLabel11.setText("Buku Dipinjam");
+
+        jumlahbuku.setText("jmlh...");
+
+        jLabel16.setText("Mohon kembalikan buku sebelum batas tanggal pengembalian dilewatkan!");
+
+        javax.swing.GroupLayout body2Layout = new javax.swing.GroupLayout(body2);
+        body2.setLayout(body2Layout);
+        body2Layout.setHorizontalGroup(
+            body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2)
+            .addGroup(body2Layout.createSequentialGroup()
+                .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(body2Layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel11))
+                        .addGap(64, 64, 64)
+                        .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jumlahbuku)
+                            .addComponent(label_nim)
+                            .addComponent(label_user)))
+                    .addGroup(body2Layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(jLabel16)))
+                .addContainerGap(551, Short.MAX_VALUE))
+        );
+        body2Layout.setVerticalGroup(
+            body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, body2Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(label_user))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(label_nim))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(body2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jumlahbuku))
+                .addGap(30, 30, 30)
+                .addComponent(jLabel16)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE))
+        );
+
+        content_2.add(body2, java.awt.BorderLayout.CENTER);
+
+        footer2.setBackground(new java.awt.Color(204, 204, 204));
+        footer2.setMaximumSize(new java.awt.Dimension(926, 129));
+
+        jLabel19.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        jLabel19.setText("ID Buku");
+
+        jLabel20.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        jLabel20.setText("Judul Buku");
+
+        jLabel21.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        jLabel21.setText("Tanggal Pinjam");
+
+        jLabel23.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        jLabel23.setText("Batas Tanggal Pengembalian");
+
+        btnKembalibuku.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnKembalibuku.setText("Kembalikan Buku");
+        btnKembalibuku.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKembalibukuActionPerformed(evt);
+            }
+        });
+
+        labTglPengembalian.setText("...");
+
+        labTglPinjam.setText("...");
+
+        labJudul1.setText("...");
+
+        labID1.setText("...");
+
+        javax.swing.GroupLayout footer2Layout = new javax.swing.GroupLayout(footer2);
+        footer2.setLayout(footer2Layout);
+        footer2Layout.setHorizontalGroup(
+            footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer2Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnKembalibuku)
+                    .addGroup(footer2Layout.createSequentialGroup()
+                        .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel23))
+                        .addGap(53, 53, 53)
+                        .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(labID1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labJudul1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labTglPinjam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labTglPengembalian, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(554, Short.MAX_VALUE))
+        );
+        footer2Layout.setVerticalGroup(
+            footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer2Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(labID1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel20)
+                    .addComponent(labJudul1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel21)
+                    .addComponent(labTglPinjam))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(footer2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel23)
+                    .addComponent(labTglPengembalian))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnKembalibuku)
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        content_2.add(footer2, java.awt.BorderLayout.PAGE_END);
+
+        pnlContent.add(content_2, "card2");
+
+        content_3.setLayout(new java.awt.BorderLayout());
+
+        body.setPreferredSize(new java.awt.Dimension(994, 332));
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel7.setText("Data user");
+
+        label_user1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        label_user1.setText("jLabel10");
+
+        jLabel17.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel17.setText("NIM");
+
+        labUser.setText("...");
+
+        labNama.setText("...");
+
+        jLabel12.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel12.setText("Nama");
+
+        jLabel13.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel13.setText("Jurusan");
+
+        labJurusan.setText("...");
+
+        jLabel18.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel18.setText("Tgl Lahir");
+
+        labTglahir.setText("...");
+
+        jLabel22.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel22.setText("Alamat");
+
+        labAlamat.setText("...");
+
+        jLabel14.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel14.setText("No. Telp");
+
+        labTelp.setText("...");
+
+        jLabel26.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel26.setText("Ubah Password");
+
+        jLabel28.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel28.setText("Password Lama");
+
+        jLabel27.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel27.setText("Password Baru");
+
+        jLabel29.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel29.setText("Konfirmasi Password");
+
+        txtPassKonfirmasi.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPassKonfirmasiKeyPressed(evt);
+            }
+        });
+
+        btnSimpanPassword.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnSimpanPassword.setText("Simpan");
+        btnSimpanPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanPasswordActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel29)
+                        .addGap(45, 45, 45)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtPassBaru)
+                                .addComponent(txtPassLama, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPassKonfirmasi, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSimpanPassword)))
+                    .addComponent(jLabel28)
+                    .addComponent(jLabel27)
+                    .addComponent(jLabel26))
+                .addContainerGap(79, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(41, 41, 41)
+                .addComponent(jLabel26)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel28)
+                    .addComponent(txtPassLama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel27)
+                    .addComponent(txtPassBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel29)
+                    .addComponent(txtPassKonfirmasi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnSimpanPassword)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel10.setText("Ubah Username");
+
+        jLabel24.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel24.setText("Username");
+
+        jLabel25.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
+        jLabel25.setText("Password");
+
+        txtPassUsername.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPassUsernameKeyPressed(evt);
+            }
+        });
+
+        btnEdit.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnEdit.setText("Perbarui Data");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        btnSimpanUsername.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnSimpanUsername.setText("Simpan");
+        btnSimpanUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanUsernameActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout bodyLayout = new javax.swing.GroupLayout(body);
+        body.setLayout(bodyLayout);
+        bodyLayout.setHorizontalGroup(
+            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bodyLayout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(bodyLayout.createSequentialGroup()
+                        .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel18)
+                                .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel7))
+                        .addGap(80, 80, 80)
+                        .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(label_user1)
+                            .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(labTelp, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labAlamat, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labTglahir, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labJurusan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labNama, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labUser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnEdit)))
+                    .addComponent(jLabel10)
+                    .addGroup(bodyLayout.createSequentialGroup()
+                        .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel24)
+                            .addComponent(jLabel25))
+                        .addGap(26, 26, 26)
+                        .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnSimpanUsername)
+                            .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtPassUsername, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        bodyLayout.setVerticalGroup(
+            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bodyLayout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(label_user1))
+                .addGap(30, 30, 30)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(labUser))
+                .addGap(10, 10, 10)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(labNama))
+                .addGap(11, 11, 11)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(labJurusan))
+                .addGap(11, 11, 11)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(labTglahir))
+                .addGap(11, 11, 11)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel22)
+                    .addComponent(labAlamat))
+                .addGap(11, 11, 11)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(labTelp))
+                .addGap(18, 18, 18)
+                .addComponent(btnEdit)
+                .addGap(28, 28, 28)
+                .addComponent(jLabel10)
+                .addGap(18, 18, 18)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25)
+                    .addComponent(txtPassUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btnSimpanUsername)
+                .addContainerGap(27, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        content_3.add(body, java.awt.BorderLayout.CENTER);
+
+        footer3.setBackground(new java.awt.Color(204, 204, 204));
+        footer3.setMaximumSize(new java.awt.Dimension(926, 129));
+
+        btnKeluar.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        btnKeluar.setText("Log Out");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout footer3Layout = new javax.swing.GroupLayout(footer3);
+        footer3.setLayout(footer3Layout);
+        footer3Layout.setHorizontalGroup(
+            footer3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer3Layout.createSequentialGroup()
+                .addContainerGap(888, Short.MAX_VALUE)
+                .addComponent(btnKeluar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        footer3Layout.setVerticalGroup(
+            footer3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(footer3Layout.createSequentialGroup()
+                .addGap(11, 11, 11)
+                .addComponent(btnKeluar, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(17, Short.MAX_VALUE))
+        );
+
+        content_3.add(footer3, java.awt.BorderLayout.PAGE_END);
+
+        pnlContent.add(content_3, "card2");
+
+        pnlMain.add(pnlContent, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(pnlMain, java.awt.BorderLayout.CENTER);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void dataPinjamMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataPinjamMouseClicked
+        // TODO add your handling code here:
+        active(dataPinjam);
+        nonactive(pinjamBuku);
+        nonactive(pengaturan);
+        content_2.setVisible(true);
+        content_1.setVisible(false);
+        content_3.setVisible(false);
+        labDataPinjam.setForeground(Color.black);
+        labPengaturan.setForeground(Color.white);
+        labPinjamBuku.setForeground(Color.white);
+    }//GEN-LAST:event_dataPinjamMouseClicked
+
+    private void pengaturanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pengaturanMouseClicked
+        // TODO add your handling code here:
+        active(pengaturan);
+        nonactive(dataPinjam);
+        nonactive(pinjamBuku);
+        content_3.setVisible(true);
+        content_2.setVisible(false);
+        content_1.setVisible(false);
+        labDataPinjam.setForeground(Color.white);
+        labPengaturan.setForeground(Color.black);
+        labPinjamBuku.setForeground(Color.white);
+
+    }//GEN-LAST:event_pengaturanMouseClicked
+
+    private void pinjamBukuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pinjamBukuMouseClicked
+        // TODO add your handling code here
+        active(pinjamBuku);
+        nonactive(dataPinjam);
+        nonactive(pengaturan);
+        content_1.setVisible(true);
+        content_2.setVisible(false);
+        content_3.setVisible(false);
+        labDataPinjam.setForeground(Color.white);
+        labPengaturan.setForeground(Color.white);
+        labPinjamBuku.setForeground(Color.black);
+
+    }//GEN-LAST:event_pinjamBukuMouseClicked
+
+    private void btnPinjamBukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPinjamBukuActionPerformed
+        if (labStatus.getText().equals("Tersedia")) {
+            try {
+                init.Connection();
+                PreparedStatement pStatement = init.conn.prepareStatement("SELECT * FROM mahasiswa WHERE nim = ?");
+                pStatement.setString(1, user);
+                ResultSet rs = pStatement.executeQuery();
+
+                if (rs.next()) {
+                    nama2 = rs.getString("nama");
+                    no_telp = rs.getString("no_telp");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Data mahasiswa kurang lengkap", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                }
+                try {
+                    judul_buku = labJudul.getText();
+                    String cmbBox = cmbLamaPinjam.getSelectedItem().toString();
+                    init.Connection();
+                    PreparedStatement pSt = init.conn.prepareStatement("INSERT INTO datapinjaman_pending (nim,nama,no_telp,id_buku,judul_buku,stat,tanggal_pinjam,tanggal_pengembalian) VALUES (?,?,?,?,?,?,CURDATE(),DATE_ADD(NOW(),INTERVAL +" + cmbBox + " DAY))");
+                    pSt.setString(1, user);
+                    pSt.setString(2, nama2);
+                    pSt.setString(3, no_telp);
+                    pSt.setString(4, id_buku);
+                    pSt.setString(5, judul_buku);
+                    pSt.setString(6, "Diajukan");
+
+                    if (pSt.executeUpdate() > 0) {
+                        JOptionPane.showMessageDialog(this, "Peminjama buku telah diajukan, tunggu konfirmasi dari admin", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                        labJudul.setText("...");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Pengajuan gagal", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    try {
+                        init.Connection();
+                        PreparedStatement PST = init.conn.prepareStatement("UPDATE buku SET stat = 'Dipinjam' WHERE id_buku = ?");
+                        PST.setString(1, id_buku);
+
+                        if (PST.executeUpdate() > 0) {
+                            tampilTabel(getData("SELECT * FROM buku"));
+                        }
+                        PST.close();
+                        init.conn.close();
+                    } catch (SQLException e) {
+                        System.out.println("Error " + e.toString());
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error " + e.toString());
+                }
+                pStatement.close();
+                init.conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error " + e.toString());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Buku tidak tersedia", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        }
+        tampilTabelBuku(getData1(sql));
+    }//GEN-LAST:event_btnPinjamBukuActionPerformed
+
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+        String userType = txtSearch.getText();
+        if (!userType.isEmpty()) {
+            String query = "SELECT * FROM buku WHERE judul_buku LIKE '%" + userType
+                    + "%' OR penulis_buku LIKE '%" + userType
+                    + "%' OR tahun_terbit LIKE '%" + userType
+                    + "%' OR genre_buku LIKE '%" + userType
+                    + "%' OR stat LIKE '" + userType + "%'";
+            tampilTabel(getData(query));
+        } else {
+            tampilTabel(getData("SELECT * FROM buku"));
+        }
+    }//GEN-LAST:event_txtSearchKeyReleased
+
+    private void btnKembalibukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembalibukuActionPerformed
+        if (status.equals("Dipinjam")) {
+            try {
+                init.Connection();
+                PreparedStatement PST = init.conn.prepareStatement("UPDATE buku SET stat = 'Tersedia' WHERE id_buku = ?");
+                PST.setString(1, labID1.getText());
+                if (PST.executeUpdate() > 0) {
+                    tampilTabel(getData("SELECT * FROM buku"));
+                    try {
+                        init.Connection();
+                        PreparedStatement pStatement = init.conn.prepareStatement("DELETE FROM datapinjaman WHERE id_buku = ? ");
+                        pStatement.setString(1, labID1.getText());
+
+                        if (pStatement.executeUpdate() > 0) {
+                            tampilTabelBuku(getData1(sql));
+                            JOptionPane.showMessageDialog(this, "Pengembalian Berhasil", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                            labID1.setText("...");
+                            labJudul1.setText("...");
+                            labTglPinjam.setText("...");
+                            labTglPengembalian.setText("...");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Pengembalian Gagal", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Error " + e.toString());
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println("Error " + e.toString());
+            } catch (Exception e) {
+                System.out.println("Error " + e.toString());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Buku ini masih dalam tahap pengajuan", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnKembalibukuActionPerformed
+
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+        // TODO add your handling code here:
+        int a = JOptionPane.showConfirmDialog(null, "Apakah anda yakin ingin log out?", "Informasi", JOptionPane.YES_NO_OPTION);
+
+        if (a == JOptionPane.YES_OPTION) {
+            executor.shutdown();
+            executor.shutdownNow();
+            this.dispose();
+            new App().show();
+        }
+    }//GEN-LAST:event_btnKeluarActionPerformed
+
+    private void txtPassUsernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPassUsernameKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSimpanUsername();
+        }
+    }//GEN-LAST:event_txtPassUsernameKeyPressed
+
+    private void btnSimpanUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanUsernameActionPerformed
+        btnSimpanUsername();
+    }//GEN-LAST:event_btnSimpanUsernameActionPerformed
+
+    private void txtPassKonfirmasiKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPassKonfirmasiKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSimpanPassword();
+        }
+    }//GEN-LAST:event_txtPassKonfirmasiKeyPressed
+
+    private void btnSimpanPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanPasswordActionPerformed
+        btnSimpanPassword();
+    }//GEN-LAST:event_btnSimpanPasswordActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        new UserEdit(user).show();
+        this.dispose();
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void closeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeMouseReleased
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_closeMouseReleased
+
+    private void maximizeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_maximizeMouseReleased
+        // TODO add your handling code here:
+        if (PageUser.this.getExtendedState() == MAXIMIZED_BOTH) {
+            PageUser.this.setExtendedState(JFrame.NORMAL);
+        } else {
+            PageUser.this.setExtendedState(MAXIMIZED_BOTH);
+        }
+    }//GEN-LAST:event_maximizeMouseReleased
+
+    private void minimizeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minimizeMouseReleased
+        // TODO add your handling code here:
+        PageUser.this.setState(Frame.ICONIFIED);
+    }//GEN-LAST:event_minimizeMouseReleased
+
+    private void pnlTitlebarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlTitlebarMousePressed
+        // TODO add your handling code here:
+        xx = evt.getX();
+        xy = evt.getY();
+    }//GEN-LAST:event_pnlTitlebarMousePressed
+
+    private void pnlTitlebarMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlTitlebarMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pnlTitlebarMouseReleased
+
+    private void pnlTitlebarMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlTitlebarMouseDragged
+        // TODO add your handling code here:\
+        int x = evt.getXOnScreen();
+        int y = evt.getYOnScreen();
+        this.setLocation(x - xx, y - xy);
+    }//GEN-LAST:event_pnlTitlebarMouseDragged
+
+    private void pnlTitlebarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlTitlebarMouseClicked
+        // TODO add your handling code here:
+        if (evt.getClickCount() == 2 && !evt.isConsumed()) {
+            if (PageUser.this.getExtendedState() == MAXIMIZED_BOTH) {
+                PageUser.this.setExtendedState(JFrame.NORMAL);
+            } else {
+                PageUser.this.setExtendedState(MAXIMIZED_BOTH);
+            }
+        }
+    }//GEN-LAST:event_pnlTitlebarMouseClicked
+
+    private void closeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeMouseEntered
+        // TODO add your handling code here:
+        close.setBackground(Color.red);
+    }//GEN-LAST:event_closeMouseEntered
+
+    private void closeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeMouseExited
+        // TODO add your handling code here:
+        close.setBackground(pnlTitlebar.getBackground());
+    }//GEN-LAST:event_closeMouseExited
+
+    private void maximizeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_maximizeMouseEntered
+        // TODO add your handling code here:
+        maximize.setBackground(new Color(51, 51, 51));
+    }//GEN-LAST:event_maximizeMouseEntered
+
+    private void maximizeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_maximizeMouseExited
+        // TODO add your handling code here:
+        maximize.setBackground(pnlTitlebar.getBackground());
+    }//GEN-LAST:event_maximizeMouseExited
+
+    private void minimizeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minimizeMouseEntered
+        // TODO add your handling code here:
+        minimize.setBackground(new Color(51, 51, 51));
+    }//GEN-LAST:event_minimizeMouseEntered
+
+    private void minimizeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minimizeMouseExited
+        // TODO add your handling code here:
+        minimize.setBackground(pnlTitlebar.getBackground());
+    }//GEN-LAST:event_minimizeMouseExited
+
+    /**
+     * @param args the command line arguments
+     */
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel body;
+    private javax.swing.JPanel body1;
+    private javax.swing.JPanel body2;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnKeluar;
+    private javax.swing.JButton btnKembalibuku;
+    private javax.swing.JButton btnPinjamBuku;
+    private javax.swing.JButton btnSimpanPassword;
+    private javax.swing.JButton btnSimpanUsername;
+    private javax.swing.JPanel close;
+    private javax.swing.JComboBox<String> cmbLamaPinjam;
+    private javax.swing.JPanel content_1;
+    private javax.swing.JPanel content_2;
+    private javax.swing.JPanel content_3;
+    private javax.swing.JPanel dataPinjam;
+    private javax.swing.JPanel footer1;
+    private javax.swing.JPanel footer2;
+    private javax.swing.JPanel footer3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JLabel jumlahbuku;
+    private javax.swing.JLabel labAlamat;
+    private javax.swing.JLabel labDataPinjam;
+    private javax.swing.JLabel labID1;
+    private javax.swing.JLabel labJudul;
+    private javax.swing.JLabel labJudul1;
+    private javax.swing.JLabel labJurusan;
+    private javax.swing.JLabel labNama;
+    private javax.swing.JLabel labPengaturan;
+    private javax.swing.JLabel labPinjamBuku;
+    private javax.swing.JLabel labStatus;
+    private javax.swing.JLabel labTelp;
+    private javax.swing.JLabel labTglPengembalian;
+    private javax.swing.JLabel labTglPinjam;
+    private javax.swing.JLabel labTglahir;
+    private javax.swing.JLabel labUser;
+    private javax.swing.JLabel label_nim;
+    private javax.swing.JLabel label_user;
+    private javax.swing.JLabel label_user1;
+    private javax.swing.JPanel maximize;
+    private javax.swing.JPanel minimize;
+    private javax.swing.JPanel pengaturan;
+    private javax.swing.JPanel pinjamBuku;
+    private javax.swing.JPanel pnlContent;
+    private javax.swing.JPanel pnlMain;
+    private javax.swing.JPanel pnlTitlebar;
+    private javax.swing.JPanel sideNav;
+    private javax.swing.JPasswordField txtPassBaru;
+    private javax.swing.JPasswordField txtPassKonfirmasi;
+    private javax.swing.JPasswordField txtPassLama;
+    private javax.swing.JPasswordField txtPassUsername;
+    private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtUsername;
+    // End of variables declaration//GEN-END:variables
+
+    public Object[][] getData1(String query) {
+        try {
+            init.Connection();
+
+            Statement st = init.conn.createStatement(
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery(query);
+
+            rs.last();
+            int rowCount = rs.getRow();
+            jumlah = String.valueOf(rowCount);
+            jumlahbuku.setText(jumlah);
+            rs.beforeFirst();
+            data2 = new Object[rowCount][6];
+            int no = -1;
+            while (rs.next()) {
+                no = no + 1;
+                data2[no][0] = rs.getString("nama");
+                data2[no][1] = rs.getString("id_buku");
+                data2[no][2] = rs.getString("judul_buku");
+                data2[no][3] = rs.getString("stat");
+                data2[no][4] = rs.getString("Tanggal_pinjam");
+                data2[no][5] = rs.getString("Tanggal_pengembalian");
+            }
+            st.close();
+            init.conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error " + e.getMessage());
+        }
+        return data2;
+    }
+
+    public Object[][] getData(String query) {
+        try {
+            init.Connection();
+
+            Statement st = init.conn.createStatement(
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery(query);
+            if (txtSearch.getText().isEmpty()) {
+                jLabel4.setText("Ketik untuk mencari buku...");
+            } else if (rs.next()) {
+                jLabel4.setText("Buku ditemukan");
+            } else {
+                jLabel4.setText("Buku tidak ditemukan");
+            }
+
+            rs.last();
+            int rowCount = rs.getRow();
+            rs.beforeFirst();
+            data1 = new Object[rowCount][6];
+            int no = -1;
+            while (rs.next()) {
+                no = no + 1;
+                data1[no][0] = rs.getString("id_buku");
+                data1[no][1] = rs.getString("judul_buku");
+                data1[no][2] = rs.getString("penulis_buku");
+                data1[no][3] = rs.getString("tahun_terbit");
+                data1[no][4] = rs.getString("genre_buku");
+                data1[no][5] = rs.getString("stat");
+            }
+            st.close();
+            init.conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error " + e.getMessage());
+        }
+        return data1;
+    }
+
+    public void tampilTabel(Object[][] data) {
+        String[] columnNames = {"ID Buku", "Judul Buku", "Penulis", "Tahun Terbit", "Genre", "Status"};
+        JTable tabel1 = new JTable(data, columnNames);
+        jScrollPane1.setViewportView(tabel1);
+        tabel1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = tabel1.rowAtPoint(e.getPoint());
+                int cols = tabel1.columnAtPoint(e.getPoint());
+                if (row >= 0 && cols >= 0) {
+                    id_buku = (data1[row][0].toString());
+                    labJudul.setText(data1[row][1].toString());
+//                    labTahun.setText(data1[row][3].toString());
+//                    labGenre.setText(data1[row][4].toString());
+                    labStatus.setText(data1[row][5].toString());
+                }
+            }
+        });
+    }
+
+    public void tampilTabelBuku(Object[][] data) {
+        String[] columnNames = {"Nama", "ID Buku", "Judul Buku", "Status", "Tanggal Pinjam", "Batas Pengembalian"};
+        JTable tabel2 = new JTable(data, columnNames);
+        jScrollPane2.setViewportView(tabel2);
+        tabel2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = tabel2.rowAtPoint(e.getPoint());
+                int cols = tabel2.columnAtPoint(e.getPoint());
+                if (row >= 0 && cols >= 0) {
+                    labID1.setText(data2[row][1].toString());
+                    labJudul1.setText(data2[row][2].toString());
+                    labTglPinjam.setText(data2[row][4].toString());
+                    labTglPengembalian.setText(data2[row][5].toString());
+                    status = data2[row][3].toString();
+                }
+            }
+        });
+    }
+
+    public void active(JPanel panel) {
+        panel.setBackground(body1.getBackground());
+        this.labDataPinjam.setForeground(Color.white);
+        this.labPengaturan.setForeground(Color.white);
+        this.labPinjamBuku.setForeground(Color.white);
+    }
+
+    public void nonactive(JPanel panel) {
+        panel.setBackground(sideNav.getBackground());
+    }
+
+    public void btnSimpanUsername() {
+        if (init.cek("SELECT * FROM dblogin WHERE username = ?", txtUsername.getText()) == false) {
+            JOptionPane.showMessageDialog(this, "Username Telah Digunakan", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtUsername.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Masukkan Username Baru Anda", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtPassUsername.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Masukan Password Anda", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            try {
+                init.Connection();
+                PreparedStatement pStatement = init.conn.prepareStatement("SELECT * FROM dblogin WHERE nim = ? AND pass = ?");
+                pStatement.setString(1, user);
+                pStatement.setString(2, txtPassUsername.getText());
+                ResultSet rs = pStatement.executeQuery();
+
+                if (rs.next()) {
+                    try {
+                        init.Connection();
+                        PreparedStatement pStatement1 = init.conn.prepareStatement("UPDATE dblogin SET username = ? WHERE nim = ?");
+                        pStatement1.setString(1, txtUsername.getText());
+                        pStatement1.setString(2, user);
+
+                        if (pStatement1.executeUpdate() > 0) {
+                            JOptionPane.showMessageDialog(this, "Ubahh Username berhasil!", "Information", JOptionPane.INFORMATION_MESSAGE);
+//                            new PeminjamanBuku().setVisible(true);
+                            new App().setVisible(true);
+                            this.dispose();
+                            JOptionPane.showMessageDialog(this, "Silahkan Login kembali!!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Ubah Username gagal!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Error " + e.toString());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Password Salah!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error " + e.toString());
+            }
+        }
+    }
+
+    public void btnSimpanPassword() {
+        if (txtPassKonfirmasi.getText().equals(txtPassBaru.getText())) {
+            try {
+                init.Connection();
+                PreparedStatement pStatement = init.conn.prepareStatement("SELECT * FROM dblogin WHERE nim = ? AND pass = ?");
+                pStatement.setString(1, user);
+                pStatement.setString(2, txtPassLama.getText());
+                ResultSet rs = pStatement.executeQuery();
+
+                if (rs.next()) {
+                    try {
+                        init.Connection();
+
+                        PreparedStatement pStatement1 = init.conn.prepareStatement("UPDATE dblogin SET pass = ? WHERE nim = ?");
+                        pStatement1.setString(1, txtPassKonfirmasi.getText());
+                        pStatement1.setString(2, user);
+
+                        if (pStatement1.executeUpdate() > 0) {
+                            JOptionPane.showMessageDialog(this, "Ubah Password berhasil!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                            new App().setVisible(true);
+                            this.dispose();
+                            JOptionPane.showMessageDialog(this, "Silahkan Login kembali!!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Ubah Password gagal!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Error " + e.toString());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Password lama tidak sesuai!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error " + e.toString());
+            }
+        } else if (txtPassLama.getText().equals("") || txtPassBaru.getText().equals("") || txtPassKonfirmasi.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Password Tidak Boleh Kosong", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtPassKonfirmasi.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Konfirmasi Password Anda", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtPassLama.getText().equals(txtPassBaru.getText())) {
+            JOptionPane.showMessageDialog(this, "Passowrd Lama Dengan Password Baru Anda Sama", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Password yang anda masukan tidak sama", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+        }
+    }
+}
